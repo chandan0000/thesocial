@@ -1,8 +1,9 @@
 from typing import List
 from fastapi import FastAPI, Response, status, HTTPException, Depends,APIRouter
 from sqlalchemy.orm import Session
-from .. import models,schemas,utils
+from .. import models,utils,schemas
 from ..databses import get_db
+from ..oauth2 import get_current_user
 
 router=APIRouter(
     prefix='/posts',
@@ -15,7 +16,7 @@ def get_posts(db:Session=Depends(get_db)):
     return  posts
 
 @router.post("/", status_code=status.HTTP_201_CREATED,response_model=schemas.Post1)
-def create_posts(post:schemas.PostBase ,db:Session=Depends(get_db)):
+def create_posts(post:schemas.PostBase ,get_current_user:int=Depends(get_current_user),db:Session=Depends(get_db)):
     # new_post = models.Post(title=post.title,content=post.content,published=post.published)
     new_post=models.Post(**post.dict())
     db.add(new_post)
