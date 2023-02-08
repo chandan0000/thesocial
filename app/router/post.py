@@ -19,9 +19,7 @@ def get_posts(db:Session=Depends(get_db),current_user:int=Depends(get_current_us
 @router.post("/", status_code=status.HTTP_201_CREATED,response_model=schemas.Post)
 def create_posts(post:schemas.PostBase ,current_user:int=Depends(get_current_user),db:Session=Depends(get_db)):
     # new_post = models.Post(title=post.title,content=post.content,published=post.published)
-    print(f"user id: {post.dict(),current_user.id}")
- 
- 
+    # print(f"user id: {post.dict(),current_user.id}")
     new_post = models.Post(owner_id=current_user.id, **post.dict())
     db.add(new_post)
     db.commit()
@@ -61,7 +59,7 @@ def delete_post(id: int,db:Session=Depends(get_db),current_user:int=Depends(get_
 def update_post(id: int, post: schemas.PostBase,current_user:int=Depends(get_current_user),db:Session=Depends(get_db)):
     post_query = db.query(models.Post).filter(models.Post.id == id)
     post=post_query.first()
- 
+
     if post == None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
